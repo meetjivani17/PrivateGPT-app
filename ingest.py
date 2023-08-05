@@ -49,12 +49,12 @@ LOADER_MAPPING = {
 load_dotenv()
 
 
-def load_single_document(file_path: str) -> Document:
+def load_single_document(file_path: str) -> List[Document]:
     ext = "." + file_path.rsplit(".", 1)[-1]
     if ext in LOADER_MAPPING:
         loader_class, loader_args = LOADER_MAPPING[ext]
         loader = loader_class(file_path, **loader_args)
-        return loader.load()[0]
+        return loader.load()
 
     raise ValueError(f"Unsupported file extension '{ext}'")
 
@@ -64,7 +64,7 @@ def load_documents(source_dir: str) -> List[Document]:
     all_files = []
     for ext in LOADER_MAPPING:
         all_files.extend(
-            glob.glob(os.path.join(source_dir, f"**/*{ext}"), recursive=True)
+            glob.glob(os.path.join(source_dir, f"*/{ext}"), recursive=True)
         )
     return [load_single_document(file_path) for file_path in all_files]
 
@@ -94,7 +94,7 @@ def main(collection):
     db = None
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     # Create the argument parser
     parser = argparse.ArgumentParser()
     parser.add_argument("--collection", help="Saves the embedding in a collection name as specified")
